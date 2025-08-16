@@ -1,0 +1,33 @@
+name: Deploy DigitalOcean Function
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        run: sudo snap install doctl --classic
+
+      - name: Authenticate doctl
+        run: doctl auth init -t ${{ secrets.DO_API_TOKEN }}
+
+      - name: Connect with namespace
+        run: doctl serverless connect ${{ secrets.DO_NAMESPACE }}
+
+      - name: Write env file
+        run: |
+          cat <<EOF > .env
+          B2_KEY_ID: "${{ secrets.B2_KEY_ID }}"
+          B2_APP_KEY: "${{ secrets.B2_APP_KEY }}"
+          B2_ENDPOINT: "${{ secrets.B2_ENDPOINT }}"
+          B2_BUCKET: "${{ secrets.B2_BUCKET }}"
+          EOF
+
+      - name: Deploy function
+        run: doctl serverless deploy . 
