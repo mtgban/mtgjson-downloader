@@ -3,6 +3,7 @@ name: Deploy DigitalOcean Function
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:   
 
 jobs:
   deploy:
