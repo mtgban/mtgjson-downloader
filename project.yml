@@ -1,0 +1,25 @@
+packages:
+  - name: default
+    functions:
+      - name: downloader
+        runtime: go:1.20
+        environment:
+          B2_KEY_ID: "${B2_KEY_ID}"
+          B2_APP_KEY: "${B2_APP_KEY}"
+          B2_ENDPOINT: "${B2_ENDPOINT}"
+          B2_BUCKET: "${B2_BUCKET}"
+        limits:
+          timeout: 60000
+        triggers:
+          - name: tcgskus-daily
+            sourceType: scheduler
+            sourceDetails:
+              cron: "1 18 * * *"
+              withBody:
+                URL: "https://www.mtgjson.com/api/v5/TcgSkus.json.xz"
+          - name: allprintings-daily
+            sourceType: scheduler
+            sourceDetails:
+              cron: "0 18 * * *"
+              withBody:
+                URL: "https://www.mtgjson.com/api/v5/AllPrintings.json.xz"
