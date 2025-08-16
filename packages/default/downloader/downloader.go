@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -72,9 +73,13 @@ func downloadAndUploadLatest(URL string) error {
 	}
 
 	// Setup Backblaze B2 S3 client
+	endpoint := os.Getenv("B2_ENDPOINT")
+	region := strings.TrimPrefix(endpoint, "s3.")
+	region = strings.Split(region, ".")[0]
+
 	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-005"),
-		Endpoint:    aws.String(os.Getenv("B2_ENDPOINT")),
+		Region:      aws.String(region),
+		Endpoint:    aws.String(endpoint),
 		Credentials: credentials.NewStaticCredentials(os.Getenv("B2_KEY_ID"), os.Getenv("B2_APP_KEY"), ""),
 	})
 	if err != nil {
